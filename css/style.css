@@ -1,0 +1,659 @@
+:root {
+  --wood: #3b2416;
+  --wood-2: #5a3824;
+  --cream: #f4e6c8;
+  --gold: #f0c14b;
+  --grass: #2f6b32;
+  --ink: #1a120c;
+  --danger: #d32f2f;
+  --ok: #2e7d32;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: Nunito, system-ui, sans-serif;
+  background: #12210f;
+  color: var(--cream);
+}
+
+#game-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.hud-top,
+.shop,
+.inspect,
+.hud-bottom {
+  position: absolute;
+  z-index: 4;
+  background: linear-gradient(180deg, rgba(59, 36, 22, 0.94), rgba(32, 18, 10, 0.92));
+  border: 2px solid #8a5a32;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.hud-top {
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 16px;
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 170px;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ff8a80, #c62828);
+  display: grid;
+  place-items: center;
+  color: transparent;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.brand small {
+  display: block;
+  opacity: 0.7;
+  font-size: 11px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  min-width: 78px;
+}
+
+.stat span {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.stat b {
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.stat.lives b {
+  color: #ff8a80;
+}
+
+.stat.cash b {
+  color: var(--gold);
+}
+
+.shop,
+.inspect {
+  top: 86px;
+  width: 230px;
+  max-height: calc(100% - 170px);
+  overflow: auto;
+  padding: 14px;
+  border-radius: 16px;
+}
+
+.shop {
+  left: 12px;
+}
+
+.inspect {
+  right: 12px;
+}
+
+.shop h2,
+.shop h3,
+.inspect h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.shop h3 {
+  font-size: 14px;
+  margin-top: 12px;
+  color: var(--gold);
+}
+
+#bloon-spawner {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#bloon-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.bloon-btn {
+  padding: 4px 6px;
+  font-size: 10px;
+  border: 0;
+  border-radius: 6px;
+  background: #2a1810;
+  color: var(--cream);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.bloon-btn:hover {
+  background: #3e2a1c;
+}
+
+.hint,
+#inspect-desc {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
+.shop-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: #2a1810;
+  color: var(--cream);
+  text-align: left;
+  cursor: pointer;
+}
+
+.shop-card:hover,
+.shop-card.active {
+  outline: 2px solid var(--gold);
+}
+
+.shop-card .swatch {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+}
+
+.shop-card small {
+  display: block;
+  opacity: 0.65;
+}
+
+.shop-card .price {
+  color: var(--gold);
+  font-weight: 800;
+}
+
+.inspect-stats {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.target-label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+select,
+button {
+  font-family: inherit;
+}
+
+#target-mode,
+.upgrade-btn,
+.sell-btn,
+.nudge-btn,
+.primary,
+.speed button,
+#btn-auto,
+#btn-start {
+  width: 100%;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.nudge-btn {
+  background: #7b1fa2;
+  color: #fff;
+}
+
+.nudge-btn.active {
+  background: #9c27b0;
+  box-shadow: 0 0 10px rgba(123, 26, 162, 0.5);
+}
+
+.nudge-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.nudge-controls button {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  background: #3e2a1c;
+  color: var(--cream);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.nudge-controls button:hover {
+  background: #5d4037;
+}
+
+#target-mode {
+  background: #1e120c;
+  color: var(--cream);
+}
+
+.upgrade-btn,
+.primary,
+#btn-play,
+#btn-retry {
+  background: #e6b035;
+  color: var(--ink);
+}
+
+.sell-btn {
+  background: #8d3b2f;
+  color: #fff;
+}
+
+.hud-bottom {
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 16px;
+  width: min(720px, calc(100% - 480px));
+}
+
+#btn-start,
+#btn-auto,
+#btn-sandbox {
+  width: auto;
+  margin: 0;
+  min-width: 140px;
+}
+
+#btn-auto,
+#btn-sandbox {
+  background: #3e2a1c;
+  color: var(--cream);
+}
+
+#btn-sandbox.active {
+  background: #7b1fa2;
+  color: #fff;
+}
+
+.speed {
+  display: flex;
+  gap: 4px;
+}
+
+.speed button {
+  width: 44px;
+  margin: 0;
+  background: #2a1810;
+  color: var(--cream);
+}
+
+.speed button.active {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+#wave-preview {
+  margin: 0;
+  font-size: 13px;
+  flex: 1;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 14, 6, 0.72);
+  display: grid;
+  place-items: center;
+  z-index: 10;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.panel {
+  width: min(520px, 90vw);
+  background: #3a2418;
+  border: 3px solid #d7a04a;
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.panel h1 {
+  margin: 0 0 10px;
+}
+
+.panel p,
+.panel li {
+  line-height: 1.5;
+}
+
+.toast {
+  position: absolute;
+  top: 86px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1b120c;
+  border: 2px solid var(--gold);
+  padding: 8px 14px;
+  border-radius: 999px;
+  z-index: 6;
+}
+
+/* Map selector in HUD */
+.hud-map-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(240, 193, 75, 0.35);
+  border-radius: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--cream);
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.hud-map-btn:hover {
+  background: rgba(240, 193, 75, 0.2);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.hud-map-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 5px;
+  border-radius: 4px;
+  opacity: 0.8;
+}
+
+.hud-map-val {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.hud-map-chevron {
+  font-size: 11px;
+  color: var(--gold);
+  opacity: 0.8;
+}
+
+/* Map Selection Modal & Panels */
+.map-choice-panel {
+  width: min(650px, 94vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(58, 36, 24, 0.98), rgba(30, 16, 8, 0.98));
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.panel-subtitle {
+  margin: 0 0 16px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.stage-select-box {
+  margin: 16px 0;
+}
+
+.stage-section-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.stage-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stage-card {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: rgba(20, 12, 8, 0.6);
+  color: var(--cream);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-card:hover {
+  transform: translateY(-2px);
+  background: rgba(40, 24, 16, 0.8);
+  border-color: rgba(240, 193, 75, 0.6);
+}
+
+.stage-card.active {
+  border-color: var(--gold);
+  background: rgba(240, 193, 75, 0.12);
+  box-shadow: 0 0 16px rgba(240, 193, 75, 0.25), inset 0 0 12px rgba(240, 193, 75, 0.1);
+}
+
+/* Theme specifics for cards */
+.stage-card.theme-ice:hover {
+  border-color: rgba(79, 195, 247, 0.7);
+  box-shadow: 0 4px 18px rgba(79, 195, 247, 0.2);
+}
+.stage-card.theme-ice.active {
+  border-color: #4fc3f7;
+  background: rgba(79, 195, 247, 0.15);
+  box-shadow: 0 0 20px rgba(79, 195, 247, 0.35);
+}
+
+.stage-card.theme-lava:hover {
+  border-color: rgba(255, 87, 34, 0.7);
+  box-shadow: 0 4px 18px rgba(255, 87, 34, 0.25);
+}
+.stage-card.theme-lava.active {
+  border-color: #ff5722;
+  background: rgba(255, 87, 34, 0.15);
+  box-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
+}
+
+.stage-card-icon {
+  font-size: 32px;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.stage-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stage-card-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.stage-card-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+
+.theme-ice .stage-card-tag {
+  color: #81d4fa;
+}
+
+.theme-lava .stage-card-tag {
+  color: #ff8a65;
+}
+
+.stage-card-desc {
+  font-size: 12px;
+  line-height: 1.35;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.stage-card-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  align-self: center;
+}
+
+.panel-tips {
+  margin: 14px 0 18px;
+  padding-left: 20px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.btn-large {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.modal-notice {
+  font-size: 13px;
+  padding: 10px 14px;
+  background: rgba(255, 152, 0, 0.15);
+  border-left: 3px solid #ff9800;
+  border-radius: 8px;
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+
+.modal-actions,
+.end-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-actions button,
+.end-actions button {
+  flex: 1;
+  padding: 12px;
+  font-weight: 800;
+  font-family: inherit;
+  border-radius: 10px;
+  border: 0;
+  cursor: pointer;
+}
+
+.secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--cream);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 960px) {
+  .shop,
+  .inspect {
+    width: 180px;
+  }
+
+  .hud-top {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .hud-map-badge {
+    display: none;
+  }
+
+  .hud-bottom {
+    width: calc(100% - 24px);
+    left: 12px;
+    transform: none;
+    flex-wrap: wrap;
+  }
+}

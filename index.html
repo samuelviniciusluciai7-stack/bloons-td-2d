@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Balões TD 2D</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="game-root">
+      <canvas id="scene"></canvas>
+
+      <header class="hud-top">
+        <div class="brand">
+          <span class="brand-mark">●</span>
+          <div>
+            <strong>Balões TD 2D</strong>
+            <small>Inspirado em Bloons TD 6</small>
+          </div>
+        </div>
+        <div class="stat lives" title="Vidas">
+          <span>❤</span>
+          <b id="stat-lives">150</b>
+        </div>
+        <div class="stat cash" title="Dinheiro">
+          <span>$</span>
+          <b id="stat-cash">650</b>
+        </div>
+        <div class="stat round" title="Rodada">
+          <span>Rodada</span>
+          <b id="stat-round">0 / 40</b>
+        </div>
+        <div class="stat pops" title="Estouros">
+          <span>Estouros</span>
+          <b id="stat-pops">0</b>
+        </div>
+        <button id="btn-map-select" class="hud-map-btn" title="Trocar Fase / Mapa">
+          <span class="hud-map-badge">Fase</span>
+          <div class="hud-map-val">
+            <span id="hud-map-icon">🌲</span>
+            <span id="hud-map-name">Pradaria</span>
+          </div>
+          <span class="hud-map-chevron">▾</span>
+        </button>
+      </header>
+
+      <aside class="shop" id="shop">
+        <h2>Defensores</h2>
+        <p class="hint">Clique para posicionar. Não dá para construir na trilha.</p>
+        <div id="shop-list"></div>
+        <div id="bloon-spawner" hidden>
+          <h3>Spawner Sandbox</h3>
+          <div id="bloon-buttons"></div>
+        </div>
+      </aside>
+
+      <aside class="inspect" id="inspect" hidden>
+        <h2 id="inspect-name">Torre</h2>
+        <p id="inspect-desc"></p>
+        <div class="inspect-stats" id="inspect-stats"></div>
+        <label class="target-label">Alvo</label>
+        <select id="target-mode">
+          <option value="first">Primeiro</option>
+          <option value="last">Último</option>
+          <option value="strong">Mais forte</option>
+          <option value="close">Mais perto</option>
+        </select>
+        <button class="upgrade-btn" id="upgrade-btn">Melhorar</button>
+        <button class="sell-btn" id="sell-btn">Vender</button>
+        <button class="nudge-btn" id="nudge-btn">Modo Nudge</button>
+        <div class="nudge-controls" id="nudge-controls" hidden>
+          <button data-dir="up">↑</button>
+          <button data-dir="down">↓</button>
+          <button data-dir="left">←</button>
+          <button data-dir="right">→</button>
+        </div>
+      </aside>
+
+      <footer class="hud-bottom">
+        <button id="btn-start" class="primary">Iniciar rodada</button>
+        <button id="btn-auto">Auto: off</button>
+        <button id="btn-sandbox">Sandbox</button>
+        <div class="speed">
+          <button data-speed="1" class="active">1x</button>
+          <button data-speed="2">2x</button>
+          <button data-speed="3">3x</button>
+        </div>
+        <p id="wave-preview">Próxima: 20 vermelhos</p>
+      </footer>
+
+      <div class="toast" id="toast" hidden></div>
+    </div>
+
+    <!-- Start Overlay -->
+    <div class="overlay" id="overlay">
+      <div class="panel map-choice-panel">
+        <h1>Balões TD 2D</h1>
+        <p class="panel-subtitle">
+          Defenda sua base estourando as ondas de balões invasores antes que alcancem o final da trilha!
+        </p>
+
+        <div class="stage-select-box">
+          <label class="stage-section-title">Selecione a Fase / Cenário:</label>
+          <div class="stage-cards" id="start-stage-cards">
+            <!-- Rendered by JS or static with data-map -->
+            <button type="button" class="stage-card active" data-map="grass">
+              <div class="stage-card-icon">🌲</div>
+              <div class="stage-card-info">
+                <div class="stage-card-name">Pradaria Verde</div>
+                <div class="stage-card-tag">Floresta Clássica</div>
+                <div class="stage-card-desc">Trajetória em zigue-zague com curvas abertas e ótima visibilidade.</div>
+              </div>
+              <div class="stage-card-badge">Normal</div>
+            </button>
+
+            <button type="button" class="stage-card theme-ice" data-map="ice">
+              <div class="stage-card-icon">❄️</div>
+              <div class="stage-card-info">
+                <div class="stage-card-name">Pico Congelado</div>
+                <div class="stage-card-tag">Fase de Gelo</div>
+                <div class="stage-card-desc">Trajetória em slalom glacial alpino com curvas sinuosas em declive.</div>
+              </div>
+              <div class="stage-card-badge">Média</div>
+            </button>
+
+            <button type="button" class="stage-card theme-lava" data-map="lava">
+              <div class="stage-card-icon">🌋</div>
+              <div class="stage-card-info">
+                <div class="stage-card-name">Vulcão Ardente</div>
+                <div class="stage-card-tag">Fase de Lava</div>
+                <div class="stage-card-desc">Trajetória espiral contornando a caldeira de magma fervente.</div>
+              </div>
+              <div class="stage-card-badge">Desafio</div>
+            </button>
+          </div>
+        </div>
+
+        <ul class="panel-tips">
+          <li>Clique esquerdo: posicionar ou selecionar defensores</li>
+          <li>Scroll do mouse: zoom · Tecla Esc: cancelar posicionamento</li>
+        </ul>
+        <button id="btn-play" class="primary btn-large">Jogar Fase</button>
+      </div>
+    </div>
+
+    <!-- Map Switch Modal (during gameplay) -->
+    <div class="overlay hidden" id="map-modal">
+      <div class="panel map-choice-panel">
+        <h2>Trocar de Fase</h2>
+        <p class="modal-notice">
+          ⚠️ <em>Atenção:</em> Selecionar uma nova fase reiniciará o jogo no novo mapa com novas trajetórias e cenários.
+        </p>
+
+        <div class="stage-select-box">
+          <div class="stage-cards" id="modal-stage-cards">
+            <button type="button" class="stage-card" data-map="grass">
+              <div class="stage-card-icon">🌲</div>
+              <div class="stage-card-info">
+                <div class="stage-card-name">Pradaria Verde</div>
+                <div class="stage-card-tag">Floresta Clássica</div>
+                <div class="stage-card-desc">Trajetória em zigue-zague com 4 curvas na grama.</div>
+              </div>
+              <div class="stage-card-badge">Normal</div>
+            </button>
+
+            <button type="button" class="stage-card theme-ice" data-map="ice">
+              <div class="stage-card-icon">❄️</div>
+              <div class="stage-card-info">
+                <div class="stage-card-name">Pico Congelado</div>
+                <div class="stage-card-tag">Fase de Gelo</div>
+                <div class="stage-card-desc">Trajetória em slalom ártico pelas geleiras.</div>
+              </div>
+              <div class="stage-card-badge">Média</div>
+            </button>
+
+            <button type="button" class="stage-card theme-lava" data-map="lava">
+              <div class="stage-card-icon">🌋</div>
+              <div class="stage-card-info">
+                <div class="stage-card-name">Vulcão Ardente</div>
+                <div class="stage-card-tag">Fase de Lava</div>
+                <div class="stage-card-desc">Trajetória espiral contornando o lago de magma.</div>
+              </div>
+              <div class="stage-card-badge">Desafio</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btn-modal-cancel" class="secondary">Voltar ao Jogo</button>
+          <button id="btn-modal-confirm" class="primary">Confirmar e Trocar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game End Overlay -->
+    <div class="overlay hidden" id="end-overlay">
+      <div class="panel">
+        <h1 id="end-title">Fim de jogo</h1>
+        <p id="end-text"></p>
+        <div class="end-actions">
+          <button id="btn-retry" class="primary">Jogar de novo</button>
+          <button id="btn-end-map" class="secondary">Trocar Fase</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/game.js"></script>
+  </body>
+</html>
